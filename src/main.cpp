@@ -94,13 +94,13 @@ void InitializeProgram()
   }
   // Setup the OpenGL Context
   // Use OpenGL 4.1 core or greater
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   
   // We want to request a double buffer for smooth updating
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 2);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
   // Create an application window using OpenGL that supports SDL
   gGraphicsApplicationWindow = SDL_CreateWindow("OpenGL Window", 0, 0, gScreenWidth, gScreenHeight, SDL_WINDOW_OPENGL);
@@ -232,11 +232,12 @@ int main( int argc, char* args[] )
   glEnable(GL_DEPTH_TEST);
 
   // build and compile shaders
-  Shader ourShader("./shaders/model-loading-vs.glsl", "./shaders/model-loading-fs.glsl");
-  Shader lightCubeShader("./shaders/light-cube-vs.glsl","./shaders/light-cube-fs.glsl");
+  Shader ourShader("../../shaders/model-loading-vs.glsl", "../../shaders/model-loading-fs.glsl");
+  Shader lightCubeShader("../../shaders/light-cube-vs.glsl","../../shaders/light-cube-fs.glsl");
 
   // load models
-  Model ourModel("resources/objects/backpack/backpack.obj");
+  std::string path = "../../resources/objects/backpack/backpack.obj";
+  Model ourModel(path);
 
   // render loop
   while (!gQuit)

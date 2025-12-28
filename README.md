@@ -1,17 +1,19 @@
-# OpenGL Model Loader
+# GLoom
+This is a minimal, blank OpenGL project that sets up GLM, GLAD and SDL and draws a square to the screen, which serves as a starting point for OpenGL projects.
 
-This project demonstrates a basic OpenGL renderer with support for loading 3D models using **Assimp**. The core functionality revolves around **Model** and **Mesh** classes that handle the loading, processing, and rendering of 3D assets.
+![OpenGL Square](square.png)
 
 ## Features
+- This project sets up basic libraries and gets you ready to write OpenGL programs
+- It includes verbose comments with explanations of how everything works
 
-- **Model class**  
-  Handles loading of 3D models via Assimp, including all meshes and textures.
+## Libraries
+External libraries which are included in this project:
+- **SDL2**: Handles input, windows and OpenGL context 
+- **GLAD**: Loading OpenGL functions
+- **GLM**: For various mathematical operations
 
-- **Mesh class**  
-  Encapsulates mesh data (vertices, indices, textures) and provides methods to render the mesh efficiently using OpenGL.
-
-- **Texture loading**  
-  Supports diffuse, specular, normal, and height maps.
-
-- **Shader integration**  
-  Meshes can be rendered with customizable shaders.
+## Compile on Linux with
+```bash
+g++ -std=c++17 ./src/* -o prog -I ./include/ -I ./thirdparty/glm-master/ -lSDL2 -ldl
+```

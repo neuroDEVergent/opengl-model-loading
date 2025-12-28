@@ -206,6 +206,7 @@ unsigned int TextureFromFile(char const * path, const string &directory, bool ga
 {
   string filename = string(path);
   filename = directory + '/' + filename;
+  std::cout << filename << std::endl;
 
   unsigned int textureID;
   glGenTextures(1, &textureID);
