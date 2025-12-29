@@ -29,9 +29,6 @@ SDL_GLContext gOpenGLContext = nullptr;
 
 // Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = 800.0f / 2.0;
-float lastY = 600.0f / 2.0;
-bool firstMouse = true;
 
 // Timing
 float deltaTime = 0.0f;
@@ -103,7 +100,7 @@ void InitializeProgram()
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
   // Create an application window using OpenGL that supports SDL
-  gGraphicsApplicationWindow = SDL_CreateWindow("OpenGL Window", 0, 0, gScreenWidth, gScreenHeight, SDL_WINDOW_OPENGL);
+  gGraphicsApplicationWindow = SDL_CreateWindow("OpenGL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gScreenWidth, gScreenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
   // Check if Window did not create
   if (gGraphicsApplicationWindow == nullptr)
@@ -131,32 +128,6 @@ void InitializeProgram()
   GetOpenGLVersionInfo();
 }
 
-void mouse_callback(int xposIn, int yposIn)
-{
-  float xpos = static_cast<float>(xposIn);
-  float ypos = static_cast<float>(yposIn);
-  
-  if (firstMouse)
-  {
-    lastX = xpos;
-    lastY = ypos;
-    firstMouse = false;
-  }
-
-  float xoffset = xpos - lastX;
-  float yoffset = lastY - ypos;
-
-  lastX = xpos;
-  lastY = ypos;
-
-  camera.ProcessMouseMovement(xoffset, yoffset);
-}
-
-void scroll_callback(int y)
-{
-  camera.ProcessMouseScroll(static_cast<float>(y));
-}
-
 /*
   // Function called in the main application loop to handle user input
   
@@ -173,41 +144,38 @@ void Input()
   {
     // If user posts an event to quit
     // An example is hitting the "x" in the corner of the window
-    if (e.type == SDL_QUIT)
+    switch (e.type)
     {
+      case SDL_QUIT:
       std::cout << "Goodbye!" << std::endl;
       gQuit = true;
-    }
+      break;
 
-    if (e.type == SDL_KEYDOWN)
-    {
-      if (e.key.keysym.sym == SDLK_w) camera.ProcessKeyboard(FORWARD, deltaTime);
-      if (e.key.keysym.sym == SDLK_s) camera.ProcessKeyboard(BACKWARD, deltaTime);
-      if (e.key.keysym.sym == SDLK_a) camera.ProcessKeyboard(LEFT, deltaTime);
-      if (e.key.keysym.sym == SDLK_d) camera.ProcessKeyboard(RIGHT, deltaTime);
-      if (e.key.keysym.sym == SDLK_ESCAPE) SDL_SetRelativeMouseMode(SDL_FALSE);
-    }
+      case SDL_MOUSEWHEEL:
+        camera.ProcessMouseScroll(e.wheel.y);
+        break;
 
-    else if (e.type == SDL_MOUSEWHEEL) scroll_callback(e.wheel.y);
+      case SDL_MOUSEBUTTONDOWN:
+        if (e.button.button == SDL_BUTTON_LEFT) 
+        {
+          SDL_RaiseWindow(gGraphicsApplicationWindow);
+          SDL_SetRelativeMouseMode(SDL_TRUE);
+        }    
+        break;
 
-    else if (e.type == SDL_MOUSEBUTTONDOWN)
-    {
-      if (e.button.button == SDL_BUTTON_LEFT) SDL_SetRelativeMouseMode(SDL_TRUE);
-    }
-
-   const Uint8 *state = SDL_GetKeyboardState(NULL);
-   if (state[SDL_SCANCODE_UP])
-   {
+      case SDL_MOUSEMOTION:
+        float mouseX = (float) e.motion.xrel;
+        float mouseY = (float) e.motion.yrel;
+        camera.ProcessMouseMovement(mouseX, -mouseY);
+        break;
+      }
    }
 
-   if (state[SDL_SCANCODE_DOWN])
-   {
-   }
-  }
-
-  int mouseX, mouseY;
-  SDL_GetMouseState(&mouseX, &mouseY);
-  mouse_callback(mouseX, mouseY);
+  const Uint8* state = SDL_GetKeyboardState(NULL);
+  if (state[SDL_SCANCODE_W]) camera.ProcessKeyboard(FORWARD, deltaTime);
+  if (state[SDL_SCANCODE_S]) camera.ProcessKeyboard(BACKWARD, deltaTime);
+  if (state[SDL_SCANCODE_D]) camera.ProcessKeyboard(RIGHT, deltaTime);
+  if (state[SDL_SCANCODE_A]) camera.ProcessKeyboard(LEFT, deltaTime);
 }
 
 void CleanUp()
@@ -244,6 +212,7 @@ int main( int argc, char* args[] )
   {
     
     float currentFrame = static_cast<float>(SDL_GetTicks());
+    std::cout << "GET TICKS: " << currentFrame << std::endl;
     deltaTime = (currentFrame - lastFrame) / 1000.0f;
     lastFrame = currentFrame;
 
